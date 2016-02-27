@@ -39,7 +39,7 @@ public class UserMealsUtil {
                                 userMeal.getDescription(),
                                 userMeal.getCalories(),
                                 mealList.stream()
-                                        .filter(meal -> meal.getDateTime().toLocalDate().equals(userMeal.getDateTime().toLocalDate()))
+                                        .filter(meal -> meal.getDateTime().toLocalDate().isEqual(userMeal.getDateTime().toLocalDate()))
                                         .collect(Collectors.summingInt(UserMeal::getCalories)) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
