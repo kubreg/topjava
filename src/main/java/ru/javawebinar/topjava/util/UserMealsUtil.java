@@ -33,13 +33,14 @@ public class UserMealsUtil {
     public static List<UserMealWithExceed>  getFilteredMealsWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         return mealList
                 .stream()
-                .filter(m -> TimeUtil.isBetween(m.getDateTime().toLocalTime(), startTime, endTime))
-                .flatMap(u -> Collections.singletonList(
-                        new UserMealWithExceed(u.getDateTime(),
-                        u.getDescription(),
-                        u.getCalories(),
-                        mealList.stream().filter(m -> m.getDateTime().toLocalDate().equals(u.getDateTime().toLocalDate())).mapToInt(UserMeal::getCalories).sum() > caloriesPerDay))
-                        .stream())
+                .filter(meal -> TimeUtil.isBetween(meal.getDateTime().toLocalTime(), startTime, endTime))
+                .map(userMeal -> new UserMealWithExceed(
+                                userMeal.getDateTime(),
+                                userMeal.getDescription(),
+                                userMeal.getCalories(),
+                                mealList.stream()
+                                        .filter(meal -> meal.getDateTime().toLocalDate().equals(userMeal.getDateTime().toLocalDate()))
+                                        .collect(Collectors.summingInt(UserMeal::getCalories)) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
 }
