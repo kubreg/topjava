@@ -27,6 +27,7 @@
             <th>Description</th>
             <th>Date</th>
             <th>Calories</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -35,6 +36,7 @@
                 <th><c:out value="${meal.description}" /></th>
                 <th><c:out value="${meal.dateTime}" /></th>
                 <th><c:out value="${meal.calories}"/></th>
+                <th><a href="meals?action=update&id=${meal.id}">Edit</a>  <a href="meals?action=delete&id=${meal.id}">Delete</a></th>
             </tr>
         </c:forEach>
         </tbody>
