@@ -33,17 +33,20 @@ public class MealServlet extends HttpServlet {
             repository.delete(id);
             response.sendRedirect("meals");
         } else {
-            int id = Integer.valueOf(request.getParameter("id"));
+            UserMeal userMeal = request.getParameter("action").equals("create") ?
+                    new UserMeal(LocalDateTime.now(), "", 500) :
+                    repository.get(Integer.valueOf(request.getParameter("id")));
 
-            request.setAttribute("meal", repository.get(id));
+            request.setAttribute("meal", userMeal);
             request.getRequestDispatcher("editMeal.jsp").forward(request, response);
         }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+        String id = request.getParameter("id");
 
-        UserMeal userMeal = new UserMeal(Integer.valueOf(request.getParameter("id")),
+        UserMeal userMeal = new UserMeal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.valueOf(request.getParameter("calories")));

@@ -20,6 +20,7 @@
 </head>
 <body>
 <h2>Meal List</h2>
+<a href="meals?action=create">Add new meal</a>
 <c:if test="${not empty mealList}">
     <table>
         <thead>
