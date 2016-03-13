@@ -40,6 +40,18 @@ public class User extends NamedEntity {
         this.roles = roles;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -82,6 +94,10 @@ public class User extends NamedEntity {
 
     public String getPassword() {
         return password;
+    }
+
+    public boolean isNew() {
+        return id == null;
     }
 
     @Override
