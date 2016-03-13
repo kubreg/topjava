@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.LoggedUser;
 import ru.javawebinar.topjava.model.UserMeal;
-import ru.javawebinar.topjava.model.UserMealWithExceed;
+import ru.javawebinar.topjava.util.to.UserMealWithExceed;
 import ru.javawebinar.topjava.service.UserMealService;
-import ru.javawebinar.topjava.service.UserMealServiceImpl;
 import ru.javawebinar.topjava.util.UserMealsUtil;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 /**
@@ -37,5 +37,9 @@ public class UserMealRestController {
 
     public Collection<UserMealWithExceed> getAll() {
         return UserMealsUtil.getWithExceeded(service.getAll(userId), UserMealsUtil.DEFAULT_CALORIES_PER_DAY);
+    }
+
+    public Collection<UserMealWithExceed> getFiltered(LocalDate from, LocalDate to) {
+        return UserMealsUtil.getFilteredWithExceeded(service.getAll(userId), from, to, UserMealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 }

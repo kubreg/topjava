@@ -5,13 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.ejb.interceptor.SpringBeanAutowiringInterceptor;
-import org.springframework.stereotype.Component;
 import ru.javawebinar.topjava.model.UserMeal;
-import ru.javawebinar.topjava.repository.mock.InMemoryUserMealRepositoryImpl;
-import ru.javawebinar.topjava.util.UserMealsUtil;
 import ru.javawebinar.topjava.web.meal.UserMealRestController;
 
 import javax.servlet.ServletConfig;
@@ -20,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -43,6 +39,7 @@ public class MealServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+
         String id = request.getParameter("id");
         UserMeal userMeal = new UserMeal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
@@ -50,6 +47,7 @@ public class MealServlet extends HttpServlet {
                 Integer.valueOf(request.getParameter("calories")));
         LOG.info(userMeal.isNew() ? "Create {}" : "Update {}", userMeal);
         controller.save(userMeal);
+
         response.sendRedirect("meals");
     }
 
@@ -57,8 +55,16 @@ public class MealServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action == null) {
-            LOG.info("getAll");
-            request.setAttribute("mealList", controller.getAll());
+            if (request.getParameter("fromDateTime") == null || request.getParameter("fromDateTime").equals("")) {
+                LOG.info("getAll");
+                request.setAttribute("mealList", controller.getAll());
+            } else {
+                LOG.info("getFiltered");
+                request.setAttribute("mealList",
+                        controller.getFiltered(LocalDate.parse(request.getParameter("fromDateTime")),
+                                LocalDate.parse(request.getParameter("toDateTime"))));
+            }
+
             request.getRequestDispatcher("/mealList.jsp").forward(request, response);
         } else if (action.equals("delete")) {
             int id = getId(request);
