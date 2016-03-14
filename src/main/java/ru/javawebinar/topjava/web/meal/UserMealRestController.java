@@ -18,7 +18,7 @@ import java.util.Collection;
 @Controller
 public class UserMealRestController {
 
-    private int userId = LoggedUser.id();
+    private int userId;
 
     @Autowired
     private UserMealService service;
@@ -41,5 +41,9 @@ public class UserMealRestController {
 
     public Collection<UserMealWithExceed> getFiltered(LocalDate from, LocalDate to) {
         return UserMealsUtil.getFilteredWithExceeded(service.getAll(userId), from, to, UserMealsUtil.DEFAULT_CALORIES_PER_DAY);
+    }
+
+    public void setUserId(int id) {
+        userId = id;
     }
 }

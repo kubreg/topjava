@@ -7,9 +7,20 @@
 <body>
 <h2>Проект "<a href="https://github.com/JavaWebinar/topjava06" target="_blank">Top Java"</a></h2>
 <hr>
+<select id="select">
+    <option value="1">1</option>
+    <option value="2">2</option>
+</select>
 <ul>
 <li><a href="users">User List</a></li>
-<li><a href="meals">Meal List</a></li>
+<li><a href="#" id="meal">Meal List</a></li>
 </ul>
+<script>
+    document.getElementById("meal").onclick = function() {
+        var e = document.getElementById("select").options[this.selectedIndex].value;
+        document.getElementById("meal").href="meals?userId=" + e;
+        return true;
+    };
+</script>
 </body>
 </html>

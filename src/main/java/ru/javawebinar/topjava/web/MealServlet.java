@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.javawebinar.topjava.LoggedUser;
 import ru.javawebinar.topjava.model.UserMeal;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.util.to.UserMealWithExceed;
 import ru.javawebinar.topjava.web.meal.UserMealRestController;
 
 import javax.servlet.ServletConfig;
@@ -17,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -53,18 +57,20 @@ public class MealServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
+        String userId = request.getParameter("userId");
+
+        if (userId != null && !userId.isEmpty()) {
+            if (LoggedUser.id() == 0) {
+                LoggedUser.setId(Integer.parseInt(userId));
+                controller.setUserId(LoggedUser.id());
+            } else if (LoggedUser.id() != Integer.parseInt(userId)) {
+                throw new NotFoundException("Invalid userId");
+            }
+        }
 
         if (action == null) {
-            if (request.getParameter("fromDateTime") == null || request.getParameter("fromDateTime").equals("")) {
-                LOG.info("getAll");
-                request.setAttribute("mealList", controller.getAll());
-            } else {
-                LOG.info("getFiltered");
-                request.setAttribute("mealList",
-                        controller.getFiltered(LocalDate.parse(request.getParameter("fromDateTime")),
-                                LocalDate.parse(request.getParameter("toDateTime"))));
-            }
-
+            LOG.info("getAll");
+            request.setAttribute("mealList", getList(request));
             request.getRequestDispatcher("/mealList.jsp").forward(request, response);
         } else if (action.equals("delete")) {
             int id = getId(request);
@@ -77,6 +83,19 @@ public class MealServlet extends HttpServlet {
                     controller.get(getId(request));
             request.setAttribute("meal", meal);
             request.getRequestDispatcher("mealEdit.jsp").forward(request, response);
+        }
+    }
+
+    private Collection<UserMealWithExceed> getList(HttpServletRequest request) {
+        String temp = request.getParameter("fromDate");
+        LocalDate from = (temp != null) ? (temp.isEmpty() ? LocalDate.MIN : LocalDate.parse(temp)) : null;
+        temp = request.getParameter("toDate");
+        LocalDate to = (temp != null) ? (temp.isEmpty() ? LocalDate.MAX : LocalDate.parse(temp)) : null;
+
+        if (from == null && to == null) {
+            return controller.getAll();
+        } else {
+            return controller.getFiltered(from, to);
         }
     }
 

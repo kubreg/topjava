@@ -17,7 +17,7 @@
 </head>
 <body>
 <section>
-    <h2><a href="index.html">Home</a></h2>
+    <h2><a href="/topjava">Home</a></h2>
     <h3>Meal list</h3>
 
     <section>
@@ -25,11 +25,11 @@
         <form role="form" id="filter" action="meals" method="get">
             <dl>
                 <dt>From DateTime:</dt>
-                <dd><input type="date" id="fromDateTime" name="fromDateTime"></dd>
+                <dd><input type="date" id="fromDate" name="fromDate"></dd>
             </dl>
             <dl>
                 <dt>To DateTime:</dt>
-                <dd><input type="date" id="toDateTime" name="toDateTime"></dd>
+                <dd><input type="date" id="toDate" name="toDate"></dd>
             </dl>
             <button type="submit">Filter</button>
         </form>
