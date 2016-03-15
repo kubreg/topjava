@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.repository.UserMealRepository;
 import ru.javawebinar.topjava.util.UserMealsUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,16 +50,23 @@ public class InMemoryUserMealRepositoryImpl implements UserMealRepository {
     public boolean delete(int id, int userId) {
         LOG.info("delete" + id + userId);
 
-        repository.get(userId).remove(id);
-        
-        return true;
+        if (repository.get(userId).containsKey(id)) {
+            repository.get(userId).remove(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public UserMeal get(int id, int userId) {
         LOG.info("get" + id + userId);
 
-        return repository.get(userId).get(id);
+        if (repository.get(userId).containsKey(id)) {
+            return repository.get(userId).get(id);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -68,6 +77,19 @@ public class InMemoryUserMealRepositoryImpl implements UserMealRepository {
             repository.put(userId, new ConcurrentHashMap<>());
         }
         return repository.get(userId).values().stream()
+                .sorted((m1, m2) -> m2.getDateTime().compareTo(m1.getDateTime()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<UserMeal> getFiltered(int userId, LocalDate fromDate, LocalDate toDate) {
+        LOG.info("getFiltered" + userId + fromDate + toDate);
+
+        if (!repository.containsKey(userId)) {
+            repository.put(userId, new ConcurrentHashMap<>());
+        }
+        return repository.get(userId).values().stream()
+                .filter(meal -> meal.getDateTime().toLocalDate().compareTo(fromDate) >= 0 && meal.getDateTime().toLocalDate().compareTo(toDate) <= 0)
                 .sorted((m1, m2) -> m1.getDateTime().compareTo(m2.getDateTime()))
                 .collect(Collectors.toList());
     }

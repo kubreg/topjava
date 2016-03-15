@@ -24,12 +24,18 @@
         <hr>
         <form role="form" id="filter" action="meals" method="get">
             <dl>
-                <dt>From DateTime:</dt>
-                <dd><input type="date" id="fromDate" name="fromDate"></dd>
+                <dt>From DateTime - To DateTime:</dt>
+                <dd>
+                    <input type="date" id="fromDate" name="fromDate">
+                    <input type="date" id="toDate" name="toDate">
+                </dd>
             </dl>
             <dl>
-                <dt>To DateTime:</dt>
-                <dd><input type="date" id="toDate" name="toDate"></dd>
+                <dt>From Time - To Time:</dt>
+                <dd>
+                    <input type="time" id="fromTime" name="fromTime">
+                    <input type="time" id="toTime" name="toTime">
+                </dd>
             </dl>
             <button type="submit">Filter</button>
         </form>
@@ -48,7 +54,7 @@
         </tr>
         </thead>
         <c:forEach items="${mealList}" var="meal">
-            <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.util.to.UserMealWithExceed"/>
+            <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.UserMealWithExceed"/>
             <tr class="${meal.exceed ? 'exceeded' : 'normal'}">
                 <td>
                         ${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}

@@ -8,8 +8,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.LoggedUser;
 import ru.javawebinar.topjava.model.UserMeal;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.util.to.UserMealWithExceed;
+import ru.javawebinar.topjava.to.UserMealWithExceed;
 import ru.javawebinar.topjava.web.meal.UserMealRestController;
 
 import javax.servlet.ServletConfig;
@@ -20,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -60,12 +60,8 @@ public class MealServlet extends HttpServlet {
         String userId = request.getParameter("userId");
 
         if (userId != null && !userId.isEmpty()) {
-            if (LoggedUser.id() == 0) {
-                LoggedUser.setId(Integer.parseInt(userId));
-                controller.setUserId(LoggedUser.id());
-            } else if (LoggedUser.id() != Integer.parseInt(userId)) {
-                throw new NotFoundException("Invalid userId");
-            }
+            LoggedUser.setId(Integer.parseInt(userId));
+            controller.setUserId(LoggedUser.id());
         }
 
         if (action == null) {
@@ -88,14 +84,22 @@ public class MealServlet extends HttpServlet {
 
     private Collection<UserMealWithExceed> getList(HttpServletRequest request) {
         String temp = request.getParameter("fromDate");
-        LocalDate from = (temp != null) ? (temp.isEmpty() ? LocalDate.MIN : LocalDate.parse(temp)) : null;
+        LocalDate fromDate = temp != null ? (temp.isEmpty() ? LocalDate.MIN : LocalDate.parse(temp)) : null;
         temp = request.getParameter("toDate");
-        LocalDate to = (temp != null) ? (temp.isEmpty() ? LocalDate.MAX : LocalDate.parse(temp)) : null;
+        LocalDate toDate = temp != null ? (temp.isEmpty() ? LocalDate.MAX : LocalDate.parse(temp)) : null;
+        temp = request.getParameter("fromTime");
+        LocalTime fromTime = temp != null ? (temp.isEmpty() ? LocalTime.MIN : LocalTime.parse(temp)) : null;
+        temp = request.getParameter("toTime");
+        LocalTime toTime = temp != null ? (temp.isEmpty() ? LocalTime.MAX : LocalTime.parse(temp)) : null;
 
-        if (from == null && to == null) {
+        if (fromDate == null && toDate == null && fromTime == null && toTime == null) {
             return controller.getAll();
+        } else if (fromTime == null && toTime == null) {
+            return controller.getFiltered(fromDate, toDate);
+        } else if (fromDate == null && toDate == null) {
+            return controller.getFiltered(fromTime, toTime);
         } else {
-            return controller.getFiltered(from, to);
+            return controller.getFiltered(fromDate, toDate, fromTime, toTime);
         }
     }
 

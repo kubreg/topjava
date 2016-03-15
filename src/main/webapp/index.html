@@ -17,8 +17,9 @@
 </ul>
 <script>
     document.getElementById("meal").onclick = function() {
-        var e = document.getElementById("select").options[this.selectedIndex].value;
-        document.getElementById("meal").href="meals?userId=" + e;
+        var e = document.getElementById("select");
+        var user = e.options[e.selectedIndex].value;
+        document.getElementById("meal").href="meals?userId=" + user;
         return true;
     };
 </script>

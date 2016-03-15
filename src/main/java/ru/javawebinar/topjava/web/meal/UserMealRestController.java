@@ -2,13 +2,13 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import ru.javawebinar.topjava.LoggedUser;
 import ru.javawebinar.topjava.model.UserMeal;
-import ru.javawebinar.topjava.util.to.UserMealWithExceed;
+import ru.javawebinar.topjava.to.UserMealWithExceed;
 import ru.javawebinar.topjava.service.UserMealService;
 import ru.javawebinar.topjava.util.UserMealsUtil;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collection;
 
 /**
@@ -39,8 +39,16 @@ public class UserMealRestController {
         return UserMealsUtil.getWithExceeded(service.getAll(userId), UserMealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 
-    public Collection<UserMealWithExceed> getFiltered(LocalDate from, LocalDate to) {
-        return UserMealsUtil.getFilteredWithExceeded(service.getAll(userId), from, to, UserMealsUtil.DEFAULT_CALORIES_PER_DAY);
+    public Collection<UserMealWithExceed> getFiltered(LocalDate fromDate, LocalDate toDate, LocalTime fromTime, LocalTime toTime) {
+        return UserMealsUtil.getFilteredWithExceeded(service.getFiltered(userId, fromDate, toDate), fromTime, toTime, UserMealsUtil.DEFAULT_CALORIES_PER_DAY);
+    }
+
+    public Collection<UserMealWithExceed> getFiltered(LocalDate fromDate, LocalDate toDate) {
+        return UserMealsUtil.getWithExceeded(service.getFiltered(userId, fromDate, toDate), UserMealsUtil.DEFAULT_CALORIES_PER_DAY);
+    }
+
+    public Collection<UserMealWithExceed> getFiltered(LocalTime fromTime, LocalTime toTime) {
+        return UserMealsUtil.getFilteredWithExceeded(service.getAll(userId), fromTime, toTime, UserMealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 
     public void setUserId(int id) {
