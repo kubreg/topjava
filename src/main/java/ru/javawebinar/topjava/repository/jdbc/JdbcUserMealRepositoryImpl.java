@@ -2,20 +2,16 @@ package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.repository.UserMealRepository;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,16 +24,11 @@ import java.util.List;
 @Repository
 public class JdbcUserMealRepositoryImpl implements UserMealRepository {
 
-    private static final BeanPropertyRowMapper<UserMeal> ROW_MAPPER = new BeanPropertyRowMapper<UserMeal>() {
-        @Override
-        public UserMeal mapRow(ResultSet rs, int rowNumber) throws SQLException {
-            UserMeal um = new UserMeal(rs.getInt(1),
-                    rs.getTimestamp(2).toLocalDateTime(),
-                    rs.getString(3),
-                    rs.getInt(4));
-            return um;
-        }
-    };
+    private static final RowMapper<UserMeal> ROW_MAPPER = ((rs, rowNum) -> new UserMeal(
+            rs.getInt("id"),
+            rs.getTimestamp("dateTime").toLocalDateTime(),
+            rs.getString("description"),
+            rs.getInt("calories")));
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -66,10 +57,10 @@ public class JdbcUserMealRepositoryImpl implements UserMealRepository {
         if (userMeal.isNew()) {
             Number newKey = insertMeal.executeAndReturnKey(map);
             userMeal.setId(newKey.intValue());
-        } else {
-            namedParameterJdbcTemplate.update(
-                    "UPDATE meals SET id=:id, dateTime=:dateTime, description=:description, " +
-                            "calories=:calories, user_id=:user_id WHERE id=:id", map);
+        } else if (namedParameterJdbcTemplate.update(
+                "UPDATE meals SET dateTime=:dateTime, description=:description, " +
+                        "calories=:calories WHERE id=:id AND user_id=:user_id", map) != 1) {
+            return null;
         }
         return userMeal;
     }
@@ -92,7 +83,6 @@ public class JdbcUserMealRepositoryImpl implements UserMealRepository {
 
     @Override
     public List<UserMeal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
-//        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         return jdbcTemplate
                 .query("SELECT * FROM meals WHERE user_id=? AND datetime >= ? AND meals.datetime <= ?"
                         , ROW_MAPPER
