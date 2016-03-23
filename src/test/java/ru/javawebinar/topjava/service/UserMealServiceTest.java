@@ -11,12 +11,13 @@ import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.util.DbPopulator;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
-import static org.junit.Assert.*;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
@@ -43,8 +44,8 @@ public class UserMealServiceTest {
 
     @Test
     public void testGet() throws Exception {
-        UserMeal userMeal = service.get(USER_MEAL_ID, USER_ID);
-        MealTestData.MATCHER.assertEquals(USER_MEAL, userMeal);
+        UserMeal userMeal = service.get(ID_1, USER_ID);
+        MealTestData.MATCHER.assertEquals(U_MEAL_1, userMeal);
     }
 
     @Test(expected = NotFoundException.class)
@@ -59,8 +60,8 @@ public class UserMealServiceTest {
 
     @Test
     public void testDelete() throws Exception {
-        service.delete(USER_MEAL_ID, USER_ID);
-        MealTestData.MATCHER.assertCollectionEquals(new ArrayList<>(), service.getAll(USER_ID));
+        service.delete(ID_1, USER_ID);
+        MealTestData.MATCHER.assertCollectionEquals(Arrays.asList(U_MEAL_2, U_MEAL_3), service.getAll(USER_ID));
     }
 
     @Test(expected = NotFoundException.class)
@@ -75,38 +76,40 @@ public class UserMealServiceTest {
 
     @Test
     public void testGetBetweenDates() throws Exception {
-
+        MealTestData.MATCHER.assertCollectionEquals(Collections.singletonList(U_MEAL_1),
+                service.getBetweenDates(LocalDate.of(2016,3,23), LocalDate.of(2016,3,23), USER_ID));
     }
 
     @Test
     public void testGetBetweenDateTimes() throws Exception {
-
+        MealTestData.MATCHER.assertCollectionEquals(Collections.singletonList(U_MEAL_2),
+                service.getBetweenDateTimes(LocalDateTime.of(2016,3,24,2,5,30), LocalDateTime.of(2016,3,24,2,10,30), USER_ID));
     }
 
     @Test
     public void testGetAll() throws Exception {
         Collection<UserMeal> list = service.getAll(USER_ID);
-        MealTestData.MATCHER.assertCollectionEquals(Arrays.asList(USER_MEAL), list);
+        MealTestData.MATCHER.assertCollectionEquals(Arrays.asList(U_MEAL_2, U_MEAL_3, U_MEAL_1), list);
     }
 
     @Test
     public void testUpdate() throws Exception {
-        UserMeal updated = new UserMeal(USER_MEAL);
+        UserMeal updated = new UserMeal(U_MEAL_1);
         updated.setDescription("BurgerUpd");
         service.update(updated, USER_ID);
-        MealTestData.MATCHER.assertEquals(updated, service.get(USER_MEAL_ID, USER_ID));
+        MealTestData.MATCHER.assertEquals(updated, service.get(ID_1, USER_ID));
     }
 
     @Test(expected = NotFoundException.class)
     public void testForeignUpdate() throws Exception {
-        service.update(USER_MEAL, ADMIN_ID);
+        service.update(U_MEAL_1, ADMIN_ID);
     }
 
     @Test
     public void testSave() throws Exception {
-        UserMeal meal = new UserMeal(LocalDateTime.now(), "Test", 1000);
+        UserMeal meal = new UserMeal(LocalDateTime.of(2016,3,23,3,17,5), "Test", 1000);
         UserMeal created = service.save(meal, USER_ID);
         meal.setId(created.getId());
-        MealTestData.MATCHER.assertCollectionEquals(Arrays.asList(USER_MEAL, meal), service.getAll(USER_ID));
+        MealTestData.MATCHER.assertCollectionEquals(Arrays.asList(U_MEAL_2, U_MEAL_3, meal, U_MEAL_1), service.getAll(USER_ID));
     }
 }
