@@ -1,6 +1,8 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -9,6 +11,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.UserMeal;
+import ru.javawebinar.topjava.rule.MethodExecutedTimeRule;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -27,6 +30,12 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class UserMealServiceTest {
 
+    @Rule
+    public MethodExecutedTimeRule rule = new MethodExecutedTimeRule();
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
     @Autowired
     protected UserMealService service;
 
@@ -36,8 +45,9 @@ public class UserMealServiceTest {
         MATCHER.assertCollectionEquals(Arrays.asList(MEAL6, MEAL5, MEAL4, MEAL3, MEAL2), service.getAll(USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testDeleteNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
         service.delete(MEAL1_ID, 1);
     }
 
@@ -54,8 +64,9 @@ public class UserMealServiceTest {
         MATCHER.assertEquals(ADMIN_MEAL, actual);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testGetNotFound() throws Exception {
+        thrown.expect(NotFoundException.class);
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -66,8 +77,9 @@ public class UserMealServiceTest {
         MATCHER.assertEquals(updated, service.get(MEAL1_ID, USER_ID));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testNotFoundUpdate() throws Exception {
+        thrown.expect(NotFoundException.class);
         UserMeal item = service.get(MEAL1_ID, USER_ID);
         service.update(item, ADMIN_ID);
     }
