@@ -16,9 +16,9 @@ dd {
 }
 
 .normal {
-    color: green;
+    color: red;
 }
 
 .exceeded {
-    color: red;
+    color: green;
 }
