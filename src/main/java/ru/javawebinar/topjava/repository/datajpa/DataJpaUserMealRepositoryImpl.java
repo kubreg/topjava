@@ -29,6 +29,9 @@ public class DataJpaUserMealRepositoryImpl implements UserMealRepository{
     @Override
     public UserMeal save(UserMeal userMeal, int userId) {
         userMeal.setUser(em.getReference(User.class, userId));
+
+        if (!userMeal.isNew() && get(userMeal.getId(), userId) == null) return null;
+
         return proxy.save(userMeal);
     }
 

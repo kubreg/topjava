@@ -8,32 +8,26 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.UserMeal;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Created by kubreg on 03.04.2016.
  */
+@Transactional(readOnly = true)
 public interface ProxyUserMealRepository extends JpaRepository<UserMeal, Integer> {
 
-    @Transactional
     @Modifying
+    @Transactional
     @Query("DELETE FROM UserMeal m WHERE m.id=:id AND m.user.id=:userId")
     int delete(@Param("id") int id, @Param("userId") int userId);
 
-    @Modifying
     @Query("SELECT m FROM UserMeal m WHERE m.user.id=:userId")
     List<UserMeal> findAll(Sort sort, @Param("userId") int userId);
 
-    @Modifying
     @Query("SELECT m FROM UserMeal m WHERE m.id=:id AND m.user.id=:userId")
     UserMeal findOne(@Param("id") int id, @Param("userId") int userId);
 
-    @Override
-    UserMeal save(UserMeal userMeal);
-
-    @Modifying
     @Query("SELECT m FROM UserMeal m "+
             "WHERE m.user.id=:userId AND m.dateTime BETWEEN :startDate AND :endDate")
     List<UserMeal>  findBetween(Sort sort, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, @Param("userId") int userId);
