@@ -28,4 +28,8 @@ public interface UserMealService {
     UserMeal update(UserMeal meal, int userId) throws NotFoundException;
 
     UserMeal save(UserMeal meal, int userId);
+
+    default UserMeal getWithUser(int id, int userId) {
+        throw new UnsupportedOperationException();
+    }
 }
