@@ -42,17 +42,17 @@ public class DataJpaUserMealRepositoryImpl implements UserMealRepository{
 
     @Override
     public UserMeal get(int id, int userId) {
-        return proxy.findByIdAndUser(id, em.getReference(User.class, userId));
+        return proxy.findByIdAndUserId(id, userId);
     }
 
     @Override
     public List<UserMeal> getAll(int userId) {
-        return proxy.findByUserOrderByDateTimeDesc(em.getReference(User.class, userId));
+        return proxy.findByUserIdOrderByDateTimeDesc(userId);
     }
 
     @Override
     public List<UserMeal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
-        return proxy.findByUserAndDateTimeBetweenOrderByDateTimeDesc(em.getReference(User.class, userId), startDate, endDate);
+        return proxy.findByUserIdAndDateTimeBetweenOrderByDateTimeDesc(userId, startDate, endDate);
     }
 
     @Override
