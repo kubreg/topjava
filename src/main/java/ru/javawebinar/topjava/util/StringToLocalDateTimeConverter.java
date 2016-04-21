@@ -8,12 +8,9 @@ import org.springframework.core.convert.converter.Converter;
 /**
  * Created by kubreg on 20.04.2016.
  */
-public class LocalDateTimeConverter implements Converter<String, LocalDateTime> {
-
-    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-
+public class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
     @Override
     public LocalDateTime convert(String s) {
-        return LocalDateTime.parse(s, formatter);
+        return LocalDateTime.parse(s, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 }
