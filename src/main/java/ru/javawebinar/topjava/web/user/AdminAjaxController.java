@@ -25,8 +25,8 @@ public class AdminAjaxController extends AbstractUserController {
     }
 
     @RequestMapping(value = "/{id}/{enabled}", method = RequestMethod.POST)
-    public void activated(@PathVariable int id, @PathVariable String enabled) {
-        super.activated(id, Boolean.parseBoolean(enabled));
+    public void activate(@PathVariable int id, @PathVariable String enabled) {
+        super.activate(id, Boolean.parseBoolean(enabled));
     }
 
     @RequestMapping(method = RequestMethod.POST)

@@ -24,7 +24,7 @@ public interface UserService {
 
     void update(User user);
 
-    default void activated(int id, boolean enabled) {
+    default void activate(int id, boolean enabled) {
         throw new UnsupportedOperationException();
     }
 

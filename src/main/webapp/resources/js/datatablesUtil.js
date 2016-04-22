@@ -14,7 +14,7 @@ function makeEditable() {
     });
 
     $('.checkbox').click(function () {
-       enabled($(this).attr("id"), $(this).is(':checked'));
+       activateUser($(this).attr("id"), $(this).is(':checked'));
     });
 
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
@@ -22,7 +22,7 @@ function makeEditable() {
     });
 }
 
-function enabled(id, enabled) {
+function activateUser(id, enabled) {
     $.ajax({
         url: ajaxUrl + id + '/' + enabled,
         type: "POST",

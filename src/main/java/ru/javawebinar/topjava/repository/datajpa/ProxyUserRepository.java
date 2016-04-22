@@ -41,5 +41,5 @@ public interface ProxyUserRepository extends JpaRepository<User, Integer> {
     @Transactional
     @Modifying
     @Query("UPDATE User SET enabled=?2 WHERE id=?1")
-    void activated(int id, boolean enabled);
+    void activate(int id, boolean enabled);
 }

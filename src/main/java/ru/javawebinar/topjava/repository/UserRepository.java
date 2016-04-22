@@ -26,7 +26,7 @@ public interface UserRepository {
         throw new UnsupportedOperationException();
     }
 
-    default void activated(int id, boolean enabled) {
+    default void activate(int id, boolean enabled) {
         throw new UnsupportedOperationException();
     }
 }

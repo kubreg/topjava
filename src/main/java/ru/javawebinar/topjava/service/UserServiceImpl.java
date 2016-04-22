@@ -58,8 +58,8 @@ public class UserServiceImpl implements UserService {
 
     @CacheEvict(value = "users", allEntries = true)
     @Override
-    public void activated(int id, boolean enabled) {
-        repository.activated(id, enabled);
+    public void activate(int id, boolean enabled) {
+        repository.activate(id, enabled);
     }
 
     @Override

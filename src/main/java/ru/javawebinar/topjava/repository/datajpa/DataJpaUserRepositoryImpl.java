@@ -51,7 +51,7 @@ public class DataJpaUserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void activated(int id, boolean enabled) {
-        proxy.activated(id, enabled);
+    public void activate(int id, boolean enabled) {
+        proxy.activate(id, enabled);
     }
 }
