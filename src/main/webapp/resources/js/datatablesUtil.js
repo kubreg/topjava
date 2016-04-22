@@ -13,9 +13,23 @@ function makeEditable() {
         return false;
     });
 
+    $('.checkbox').click(function () {
+       enabled($(this).attr("id"), $(this).is(':checked'));
+    });
+
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(event, jqXHR, options, jsExc);
     });
+}
+
+function enabled(id, enabled) {
+    $.ajax({
+        url: ajaxUrl + id + '/' + enabled,
+        type: "POST",
+        success: function () {
+            updateTable();
+        }
+    })
 }
 
 function deleteRow(id) {

@@ -56,6 +56,12 @@ public class UserServiceImpl implements UserService {
     public void evictCache() {
     }
 
+    @CacheEvict(value = "users", allEntries = true)
+    @Override
+    public void activated(int id, boolean enabled) {
+        repository.activated(id, enabled);
+    }
+
     @Override
     public User getWithMeals(int id) {
         return ExceptionUtil.check(repository.getWithMeals(id), id);
