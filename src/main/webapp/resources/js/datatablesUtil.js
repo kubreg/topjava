@@ -13,6 +13,11 @@ function makeEditable() {
         return false;
     });
 
+    $('#filter').submit(function () {
+        updateTable();
+        return false;
+    });
+
     $('.checkbox').click(function () {
        activateUser($(this).attr("id"), $(this).is(':checked'));
     });
@@ -44,13 +49,18 @@ function deleteRow(id) {
 }
 
 function updateTable() {
-    $.get(ajaxUrl, function (data) {
-        datatableApi.fnClearTable();
-        $.each(data, function (key, item) {
-            datatableApi.fnAddData(item);
+    if ($('#startDate').val() != null && $('#endDate').val() != null &&
+        $('#startTime').val() != null && $('#endTime').val() != null) {
+        filter();
+    } else {
+        $.get(ajaxUrl, function (data) {
+            datatableApi.fnClearTable();
+            $.each(data, function (key, item) {
+                datatableApi.fnAddData(item);
+            });
+            datatableApi.fnDraw();
         });
-        datatableApi.fnDraw();
-    });
+    }
 }
 
 function save() {
@@ -66,6 +76,27 @@ function save() {
             successNoty('Saved');
         }
     });
+}
+
+function filter() {
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "filter",
+        data: {
+            startDate: $('#startDate').val(),
+            endDate: $('#endDate').val(),
+            startTime: $('#startTime').val(),
+            endTime: $('#endTime').val()
+        },
+        dataType: 'json',
+        success: function (data) {
+            datatableApi.fnClearTable();
+            $.each(data, function (key, item) {
+                datatableApi.fnAddData(item);
+            });
+            datatableApi.fnDraw();
+        }
+    })
 }
 
 var failedNote;
