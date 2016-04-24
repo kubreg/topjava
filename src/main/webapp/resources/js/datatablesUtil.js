@@ -5,7 +5,7 @@ function makeEditable() {
     });
 
     $('.delete').click(function () {
-        deleteRow($(this).attr("id"));
+        deleteRow($(this).parents('tr').attr('id'));
     });
 
     $('#detailsForm').submit(function () {
@@ -19,7 +19,7 @@ function makeEditable() {
     });
 
     $('.checkbox').click(function () {
-       activateUser($(this).attr("id"), $(this).is(':checked'));
+       activateUser($(this).parents('tr').attr('id'), $(this).is(':checked'));
     });
 
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
