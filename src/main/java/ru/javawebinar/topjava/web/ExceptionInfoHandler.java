@@ -4,12 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.javawebinar.topjava.util.exception.ErrorInfo;
-import ru.javawebinar.topjava.util.exception.EmailExistException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,11 +31,11 @@ public interface ExceptionInfoHandler {
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
-    @ExceptionHandler(EmailExistException.class)
+    @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseBody
     @Order(Ordered.HIGHEST_PRECEDENCE + 1)
-    default ErrorInfo conflict(HttpServletRequest req, EmailExistException e) {
-        return logAndGetErrorInfo(req, e);
+    default ErrorInfo conflict(HttpServletRequest req) {
+        return logAndGetErrorInfo(req, new ValidationException("User with this email already present in application"));
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
