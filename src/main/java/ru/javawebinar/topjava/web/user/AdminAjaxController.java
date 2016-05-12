@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.UserUtil;
+import ru.javawebinar.topjava.util.exception.EmailExistException;
 import ru.javawebinar.topjava.web.ExceptionInfoHandler;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.List;
 
 /**
@@ -41,7 +43,11 @@ public class AdminAjaxController extends AbstractUserController implements Excep
             // TODO change to exception handler
             StringBuilder sb = new StringBuilder();
             result.getFieldErrors().forEach(fe -> sb.append(fe.getField()).append(" ").append(fe.getDefaultMessage()).append("<br>"));
-            return new ResponseEntity<>(sb.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ValidationException(sb.toString());
+        }
+
+        if (super.getByMail(userTo.getEmail()) != null) {
+            throw new EmailExistException("User with this email already present in application.");
         }
         if (userTo.getId() == 0) {
             super.create(UserUtil.createFromTo(userTo));
